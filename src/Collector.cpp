@@ -3,14 +3,8 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-#include "Collector.h"
 #include "LocaleInfo.h"
-#include "DoubleEuroPolicy.h"
-#include <boost/spirit/include/qi.hpp>
-#include <boost/spirit/include/phoenix_core.hpp>
-#include <boost/spirit/include/phoenix_operator.hpp>
-namespace qi = boost::spirit::qi;
-
+#include "QiParsers.h"
 
 CollectorPtr Collector::create(List spec, const LocaleInfo& locale) {
   std::string subclass(as<CharacterVector>(spec.attr("class"))[0]);
@@ -173,7 +167,7 @@ void CollectorDouble::setValue(int i, const Token& t) {
     boost::container::string buffer;
     SourceIterators str = t.getString(&buffer);
 
-    bool ok = qi::parse(str.first, str.second, qi::double_, REAL(column_)[i]);
+    bool ok = parseDouble('.', str.first, str.second, REAL(column_)[i]);
     if (!ok) {
       REAL(column_)[i] = NA_REAL;
       warn(t.row(), t.col(), "a double", str);
@@ -203,8 +197,7 @@ void CollectorEuroDouble::setValue(int i, const Token& t) {
     boost::container::string buffer;
     SourceIterators str = t.getString(&buffer);
 
-    bool ok = qi::parse(str.first, str.second,
-      qi::real_parser<double, DoubleEuroPolicy>(), REAL(column_)[i]);
+    bool ok = parseDouble(',', str.first, str.second, REAL(column_)[i]);
     if (!ok) {
       REAL(column_)[i] = NA_REAL;
       warn(t.row(), t.col(), "a double", str);
@@ -262,7 +255,7 @@ void CollectorInteger::setValue(int i, const Token& t) {
     boost::container::string buffer;
     SourceIterators str = t.getString(&buffer);
 
-    bool ok = qi::parse(str.first, str.second, qi::int_, INTEGER(column_)[i]);
+    bool ok = parseInt(str.first, str.second, INTEGER(column_)[i]);
     if (!ok) {
       INTEGER(column_)[i] = NA_INTEGER;
       warn(t.row(), t.col(), "an integer", str);
@@ -349,7 +342,7 @@ void CollectorNumeric::setValue(int i, const Token& t) {
     }
 
     std::string::const_iterator cbegin = clean.begin(), cend = clean.end();
-    bool ok = qi::parse(cbegin, cend, qi::double_, REAL(column_)[i]);
+    bool ok = parseDouble('.', cbegin, cend, REAL(column_)[i]);
     if (!ok || cbegin != cend) {
       warn(t.row(), t.col(), "a number", string);
       REAL(column_)[i] = NA_REAL;
