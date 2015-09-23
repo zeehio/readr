@@ -110,6 +110,12 @@ tokenizer_log <- function() {
   structure(list(), class = "tokenizer_log")
 }
 
+#' @export
+#' @rdname Tokenizers
+tokenizer_nonmem <- function() {
+  structure(list(), class = "tokenizer_nonmem")
+}
+
 
 #' @export
 #' @rdname Tokenizers
