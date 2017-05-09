@@ -65,8 +65,8 @@ guess_types_ <- function(sourceSpec, tokenizerSpec, locale_, n = 100L) {
     .Call(`_readr_guess_types_`, sourceSpec, tokenizerSpec, locale_, n)
 }
 
-whitespaceColumns <- function(sourceSpec, n = 100L, comment = "") {
-    .Call(`_readr_whitespaceColumns`, sourceSpec, n, comment)
+whitespaceColumns <- function(sourceSpec, n = 100L) {
+    .Call(`_readr_whitespaceColumns_`, sourceSpec, n)
 }
 
 type_convert_col <- function(x, spec, locale_, col, na, trim_ws) {
