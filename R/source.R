@@ -57,6 +57,9 @@ datasource <- function(file, skip = 0, comment = "", encoding = default_locale()
 
     file
   } else if (is.connection(file)) {
+    if (missing(encoding)) {
+      encoding <- "bytes"
+    }
     datasource_connection(file, skip, comment, encoding)
   } else if (is.raw(file)) {
     datasource_raw(file, skip, comment, encoding)
@@ -68,6 +71,9 @@ datasource <- function(file, skip = 0, comment = "", encoding = default_locale()
     } else {
       file <- standardise_path(file)
       if (is.connection(file)) {
+        if (missing(encoding)) {
+          encoding <- "bytes"
+        }
         datasource_connection(file, skip, comment, encoding)
       } else {
         datasource_file(file, skip, comment, encoding)
@@ -78,6 +84,13 @@ datasource <- function(file, skip = 0, comment = "", encoding = default_locale()
   }
 }
 
+encoding_from_literal_data <- function(text) {
+  enc <- Encoding(text)
+  if (enc == "unknown") {
+    return("latin1") # assume text is ASCII, and latin1 is faster than UTF-8
+  }
+  enc
+}
 
 # Constructors -----------------------------------------------------------------
 
@@ -86,7 +99,8 @@ new_datasource <- function(type, x, skip, comment = "", encoding, ...) {
     class = c(paste0("source_", type), "source"))
 }
 
-datasource_string <- function(text, skip, comment, encoding) {
+datasource_string <- function(text, skip, comment,
+                              encoding = encoding_from_literal_data(text)) {
   new_datasource("string", text, skip = skip, comment = comment, encoding = encoding)
 }
 
@@ -96,10 +110,16 @@ datasource_file <- function(path, skip, comment, encoding) {
 }
 
 datasource_connection <- function(path, skip, comment, encoding) {
+  if (missing(encoding)) {
+    encoding <- "bytes"
+  }
   datasource_raw(read_connection(path), skip, comment = comment, encoding = encoding)
 }
 
 datasource_raw <- function(text, skip, comment, encoding) {
+  if (missing(encoding)) {
+    encoding <- "bytes"
+  }
   new_datasource("raw", text, skip = skip, comment = comment, encoding = encoding)
 }
 
