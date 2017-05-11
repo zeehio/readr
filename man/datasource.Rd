@@ -4,7 +4,8 @@
 \alias{datasource}
 \title{Create a source object.}
 \usage{
-datasource(file, skip = 0, comment = "")
+datasource(file, skip = 0, comment = "",
+  encoding = default_locale()$encoding)
 }
 \arguments{
 \item{file}{Either a path to a file, a connection, or literal data
@@ -23,6 +24,11 @@ vector of greater than length 1.
 Using a value of \code{\link[=clipboard]{clipboard()}} will read from the system clipboard.}
 
 \item{skip}{Number of lines to skip before reading data.}
+
+\item{comment}{A string or character vector used to identify comments. Any
+text after the comment characters will be silently ignored.}
+
+\item{encoding}{The text encoding of the data given in \code{file}. "UTF-8" as default}
 }
 \description{
 Create a source object.
