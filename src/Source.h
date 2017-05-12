@@ -80,12 +80,12 @@ public:
 
       unit = *cur;
 
-      if (unit == cp_lf) {
+      if (unit == cp_cr) {
         cur.advance_if_crlf();
         if (!(isComment || lineStart))
           skip--;
         lineStart = true;
-      } else if (unit == cp_cr) {
+      } else if (unit == cp_lf) {
         if (!(isComment || lineStart))
           skip--;
         lineStart = true;
