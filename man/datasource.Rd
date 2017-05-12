@@ -4,8 +4,7 @@
 \alias{datasource}
 \title{Create a source object.}
 \usage{
-datasource(file, skip = 0, comment = "",
-  encoding = default_locale()$encoding)
+datasource(file, skip = 0, comment = "", encoding = NULL)
 }
 \arguments{
 \item{file}{Either a path to a file, a connection, or literal data
@@ -28,7 +27,10 @@ Using a value of \code{\link[=clipboard]{clipboard()}} will read from the system
 \item{comment}{A string or character vector used to identify comments. Any
 text after the comment characters will be silently ignored.}
 
-\item{encoding}{The text encoding of the data given in \code{file}. "UTF-8" as default}
+\item{encoding}{The text encoding of the data given in \code{file}. If \code{NULL} is
+passed (the default), then "UTF-8" is used for files,
+"bytes" is used for connections and raw vectors, and the
+string Encoding will be used for literal data strings.}
 }
 \description{
 Create a source object.

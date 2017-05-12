@@ -35,7 +35,7 @@ read_lines <- function(file, skip = 0, n_max = -1L,
   if (empty_file(file)) {
     return(character())
   }
-  ds <- datasource(file, skip = skip)
+  ds <- datasource(file, skip = skip, encoding = locale$encoding)
   read_lines_(ds, locale_ = locale, na = na, n_max = n_max, progress = progress)
 }
 
@@ -45,7 +45,7 @@ read_lines_raw <- function(file, skip = 0, n_max = -1L, progress = show_progress
   if (empty_file(file)) {
     return(list())
   }
-  ds <- datasource(file, skip = skip)
+  ds <- datasource(file, skip = skip, encoding = "bytes")
   read_lines_raw_(ds, n_max = n_max, progress = progress)
 }
 
