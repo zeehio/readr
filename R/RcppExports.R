@@ -66,15 +66,11 @@ guess_types_ <- function(sourceSpec, tokenizerSpec, locale_, n = 100L) {
 }
 
 whitespaceColumns <- function(sourceSpec, n = 100L) {
-    .Call(`_readr_whitespaceColumns_`, sourceSpec, n)
+    .Call(`_readr_whitespaceColumns`, sourceSpec, n)
 }
 
 type_convert_col <- function(x, spec, locale_, col, na, trim_ws) {
     .Call(`_readr_type_convert_col`, x, spec, locale_, col, na, trim_ws)
-}
-
-stream_delim_ <- function(df, connection, delim, na, col_names = TRUE, bom = FALSE) {
-    .Call(`_readr_stream_delim_`, df, connection, delim, na, col_names, bom)
 }
 
 write_lines_ <- function(lines, connection, na, sep = "\n") {
@@ -91,5 +87,9 @@ write_file_ <- function(x, connection) {
 
 write_file_raw_ <- function(x, connection) {
     invisible(.Call(`_readr_write_file_raw_`, x, connection))
+}
+
+stream_delim_ <- function(df, connection, delim, na, col_names = TRUE, bom = FALSE) {
+    .Call(`_readr_stream_delim_`, df, connection, delim, na, col_names, bom)
 }
 

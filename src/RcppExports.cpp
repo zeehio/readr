@@ -228,7 +228,7 @@ END_RCPP
 }
 // whitespaceColumns
 List whitespaceColumns(List sourceSpec, int n);
-RcppExport SEXP readr_whitespaceColumns(SEXP sourceSpecSEXP, SEXP nSEXP) {
+RcppExport SEXP _readr_whitespaceColumns(SEXP sourceSpecSEXP, SEXP nSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -251,22 +251,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const std::vector<std::string>& >::type na(naSEXP);
     Rcpp::traits::input_parameter< bool >::type trim_ws(trim_wsSEXP);
     rcpp_result_gen = Rcpp::wrap(type_convert_col(x, spec, locale_, col, na, trim_ws));
-    return rcpp_result_gen;
-END_RCPP
-}
-// stream_delim_
-std::string stream_delim_(const List& df, RObject connection, char delim, const std::string& na, bool col_names, bool bom);
-RcppExport SEXP _readr_stream_delim_(SEXP dfSEXP, SEXP connectionSEXP, SEXP delimSEXP, SEXP naSEXP, SEXP col_namesSEXP, SEXP bomSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const List& >::type df(dfSEXP);
-    Rcpp::traits::input_parameter< RObject >::type connection(connectionSEXP);
-    Rcpp::traits::input_parameter< char >::type delim(delimSEXP);
-    Rcpp::traits::input_parameter< const std::string& >::type na(naSEXP);
-    Rcpp::traits::input_parameter< bool >::type col_names(col_namesSEXP);
-    Rcpp::traits::input_parameter< bool >::type bom(bomSEXP);
-    rcpp_result_gen = Rcpp::wrap(stream_delim_(df, connection, delim, na, col_names, bom));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -317,6 +301,22 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// stream_delim_
+std::string stream_delim_(const List& df, RObject connection, char delim, const std::string& na, bool col_names, bool bom);
+RcppExport SEXP _readr_stream_delim_(SEXP dfSEXP, SEXP connectionSEXP, SEXP delimSEXP, SEXP naSEXP, SEXP col_namesSEXP, SEXP bomSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type df(dfSEXP);
+    Rcpp::traits::input_parameter< RObject >::type connection(connectionSEXP);
+    Rcpp::traits::input_parameter< char >::type delim(delimSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type na(naSEXP);
+    Rcpp::traits::input_parameter< bool >::type col_names(col_namesSEXP);
+    Rcpp::traits::input_parameter< bool >::type bom(bomSEXP);
+    rcpp_result_gen = Rcpp::wrap(stream_delim_(df, connection, delim, na, col_names, bom));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_readr_collectorGuess", (DL_FUNC) &_readr_collectorGuess, 2},
@@ -335,13 +335,13 @@ static const R_CallMethodDef CallEntries[] = {
     {"_readr_read_tokens_", (DL_FUNC) &_readr_read_tokens_, 7},
     {"_readr_read_tokens_chunked_", (DL_FUNC) &_readr_read_tokens_chunked_, 8},
     {"_readr_guess_types_", (DL_FUNC) &_readr_guess_types_, 4},
-    {"_readr_whitespaceColumns", (DL_FUNC) &_readr_whitespaceColumns, 3},
+    {"_readr_whitespaceColumns", (DL_FUNC) &_readr_whitespaceColumns, 2},
     {"_readr_type_convert_col", (DL_FUNC) &_readr_type_convert_col, 6},
-    {"_readr_stream_delim_", (DL_FUNC) &_readr_stream_delim_, 6},
     {"_readr_write_lines_", (DL_FUNC) &_readr_write_lines_, 4},
     {"_readr_write_lines_raw_", (DL_FUNC) &_readr_write_lines_raw_, 3},
     {"_readr_write_file_", (DL_FUNC) &_readr_write_file_, 2},
     {"_readr_write_file_raw_", (DL_FUNC) &_readr_write_file_raw_, 2},
+    {"_readr_stream_delim_", (DL_FUNC) &_readr_stream_delim_, 6},
     {NULL, NULL, 0}
 };
 
