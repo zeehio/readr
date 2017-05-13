@@ -67,21 +67,21 @@ public:
     bool hasComment = pComments.size() != 0;
     bool isComment = false, lineStart = true;
 
-    CodePointIterator cur(begin(), end(), encoding());
-    uint32_t cp_lf = cur.cp_lf();
-    uint32_t cp_cr = cur.cp_cr();
+    CodePointIteratorPtr cur = CodePointIterator::create(begin(), end(), encoding());
+    uint32_t cp_lf = cur->cp_lf();
+    uint32_t cp_cr = cur->cp_cr();
     uint32_t unit;
 
-    while (skip > 0 && !cur.is_end()) {
+    while (skip > 0 && !cur->is_end()) {
       if (lineStart) {
-        isComment = hasComment && inComment(cur);
+        isComment = hasComment && inComment(*cur);
         lineStart = false;
       }
 
-      unit = *cur;
+      unit = cur->cp();
 
       if (unit == cp_cr) {
-        cur.advance_if_crlf();
+        cur->advance_if_crlf();
         if (!(isComment || lineStart))
           skip--;
         lineStart = true;
@@ -92,10 +92,10 @@ public:
       } else if (lineStart) {
         lineStart = false;
       }
-      ++cur;
+      cur->next();
     }
 
-    return cur.get_pos();
+    return cur->get_pos();
   }
 
   const char* skipBom(const char* begin, const char* end) {
