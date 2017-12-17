@@ -37,6 +37,11 @@
 * Fixed undefined behavior in localtime.c when using `locale(tz = "")` after
   loading a timezone due to incomplete reinitialization of the global locale.
 
+* Comments are now handled by the `datasource` instead of by the `tokenizer` (@zeehio, )
+
+* Allow a character vector of comments. Using `comment = c("//", "#")` will
+  skip all the lines starting with either `//` or `#`. (@zeehio, )
+
 # readr 1.1.0
 
 ## New features
