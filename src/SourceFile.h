@@ -17,8 +17,11 @@ public:
       const std::string& path,
       int skip,
       const std::vector<std::string>& comments,
-      const std::string encoding)
-      : Source(comments, encoding) {
+      const std::string encoding) {
+
+    set_encoding(encoding);
+    set_comments(comments);
+
     try {
       fm_ = boost::interprocess::file_mapping(
           path.c_str(), boost::interprocess::read_only);

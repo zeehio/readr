@@ -15,8 +15,10 @@ public:
       Rcpp::CharacterVector x,
       int skip,
       const std::vector<std::string>& comments,
-      const std::string encoding)
-      : Source(comments, encoding) {
+      const std::string encoding) {
+    set_encoding(encoding);
+    set_comments(comments);
+
     string_ = x[0];
 
     begin_ = CHAR(string_);

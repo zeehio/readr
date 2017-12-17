@@ -31,16 +31,21 @@
 * Allow files to be read via FTP over SSH by recognising `sftp` as a URL protocol (#707, @jdeboer).
 * `read_*()` now converts string `file`s to UTF-8 before parsing, which is convenient for non-UTF-8 platforms
   in most cases (#730, @yutannihilation).
-# readr 1.1.1
-
-* Point release for test compatibility with tibble v1.3.1.
-* Fixed undefined behavior in localtime.c when using `locale(tz = "")` after
-  loading a timezone due to incomplete reinitialization of the global locale.
 
 * Comments are now handled by the `datasource` instead of by the `tokenizer` (@zeehio, )
 
 * Allow a character vector of comments. Using `comment = c("//", "#")` will
   skip all the lines starting with either `//` or `#`. (@zeehio, )
+
+* `datasource()` accepts an encoding. It is ground work for proper multi-byte support.
+  For now, comments are detected properly, no matter the encoding. (@zeehio, ).
+
+
+# readr 1.1.1
+
+* Point release for test compatibility with tibble v1.3.1.
+* Fixed undefined behavior in localtime.c when using `locale(tz = "")` after
+  loading a timezone due to incomplete reinitialization of the global locale.
 
 # readr 1.1.0
 

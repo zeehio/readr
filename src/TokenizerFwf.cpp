@@ -26,7 +26,7 @@ skip_t skipComments(SourcePtr source) {
   return out;
 }
 
-std::vector<bool> emptyCols_(SourcePtr source, int n, SourceIterator begin) {
+std::vector<bool> emptyCols_(SourcePtr source, size_t n, SourceIterator begin) {
   SourceIterator end = source->end();
   std::vector<bool> is_white;
 

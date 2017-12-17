@@ -1,6 +1,8 @@
 #ifndef FASTREAD_SOURCE_H_
 #define FASTREAD_SOURCE_H_
 
+#include "CodePointIterator.h"
+#include "Iconv.h"
 #include "boost.h"
 #include <Rcpp.h>
 
@@ -9,8 +11,7 @@ typedef boost::shared_ptr<Source> SourcePtr;
 
 class Source {
 public:
-  Source(const std::vector<std::string>& comments, std::string encoding)
-      : comments_(comments), encoding_(encoding) {}
+  Source() {}
   virtual ~Source() {}
 
   virtual const char* begin() const = 0;
@@ -19,37 +20,78 @@ public:
 
   inline bool has_comments() const { return comments_.size() != 0; }
 
+  inline const std::vector<std::string>& get_comments() { return comments_; }
+
+  void set_comments(const std::vector<std::string>& utf8comments) {
+    commentsutf8_ = utf8comments;
+    if (encoding_ == "") {
+      stop("No encoding set to source. This should not happen");
+    }
+    reencode_comments();
+  }
+
+  void reencode_comments() {
+    if (commentsutf8_.size() == 0) {
+      comments_.clear();
+      return;
+    }
+    if (encoding_ == "UTF-8" || encoding_ == "UTF8") {
+      comments_ = commentsutf8_;
+      return;
+    }
+    Iconv encoder("UTF-8", encoding_);
+    comments_.clear();
+    for (std::vector<std::string>::const_iterator i = commentsutf8_.begin();
+         i != commentsutf8_.end();
+         ++i) {
+      comments_.push_back(encoder.makeString(*i));
+    }
+  }
+
+  void set_encoding(const std::string& encoding) {
+    if (encoding_ == "") {
+      encoding_ = encoding;
+      return;
+    }
+    if (encoding != encoding_) {
+      reencode_comments();
+    }
+    encoding_ = encoding;
+    return;
+  }
+
   const char* skipLines(int skip) {
     bool is_comment = false, lineStart = true;
 
-    const char* pbegin = begin();
-    const char* cur = pbegin;
-    const char* pend = end();
+    CodePointIteratorPtr cur =
+        CodePointIterator::create(begin(), end(), encoding());
+    uint32_t cp_lf = cur->cp_lf();
+    uint32_t cp_cr = cur->cp_cr();
+    uint32_t unit;
 
-    while (skip > 0 && cur != pend) {
+    while (skip > 0 && !cur->is_end()) {
       if (lineStart) {
         is_comment = has_comments() && isComment(cur);
       }
 
-      if (*cur == '\r') {
-        if (cur + 1 != pend && *(cur + 1) == '\n') {
-          cur++;
-        }
+      unit = cur->cp();
+
+      if (unit == cp_cr) {
+        cur->advance_if_crlf();
         if (!(is_comment || lineStart))
           skip--;
         lineStart = true;
-      } else if (*cur == '\n') {
+      } else if (unit == cp_lf) {
         if (!(is_comment || lineStart))
           skip--;
         lineStart = true;
       } else if (lineStart) {
         lineStart = false;
       }
-
-      cur++;
+      cur->next();
     }
 
-    return cur;
+    return cur->get_pos();
   }
 
   const char* skipBom(const char* begin, const char* end) {
@@ -70,9 +112,9 @@ public:
       if (end - begin >= 4 && begin[1] == '\x00' && begin[2] == '\xFE' &&
           begin[3] == '\xFF') {
         if (encoding_ == "UTF-32" || encoding_ == "UTF32") {
-          encoding_ = "UTF-32BE";
+          set_encoding("UTF-32BE");
         } else if (encoding_ == "UCS-4" || encoding_ == "UCS4") {
-          encoding_ = "UCS-4BE";
+          set_encoding("UCS-4BE");
         }
         return begin + 4;
       }
@@ -89,9 +131,9 @@ public:
     case '\xfe':
       if (end - begin >= 2 && begin[1] == '\xff') {
         if (encoding_ == "UTF-16" || encoding_ == "UTF16") {
-          encoding_ = "UTF-16BE";
+          set_encoding("UTF-16BE");
         } else if (encoding_ == "UCS2" || encoding_ == "UCS-2") {
-          encoding_ = "UCS2-BE";
+          set_encoding("UCS2-BE");
         }
         return begin + 2;
       }
@@ -103,18 +145,18 @@ public:
         // UTF-32 LE
         if (end - begin >= 4 && begin[2] == '\x00' && begin[3] == '\x00') {
           if (encoding_ == "UTF-32" || encoding_ == "UTF32") {
-            encoding_ = "UTF-32LE";
+            set_encoding("UTF-32LE");
           } else if (encoding_ == "UCS-4" || encoding_ == "UCS4") {
-            encoding_ = "UCS-4LE";
+            set_encoding("UCS-4LE");
           }
           return begin + 4;
         }
 
         // UTF-16 LE
         if (encoding_ == "UTF-16" || encoding_ == "UTF16") {
-          encoding_ = "UTF-16LE";
+          set_encoding("UTF-16LE");
         } else if (encoding_ == "UCS2" || encoding_ == "UCS-2") {
-          encoding_ = "UCS2-LE";
+          set_encoding("UCS2-LE");
         }
         return begin + 2;
       }
@@ -210,8 +252,25 @@ public:
     return false;
   }
 
+  bool isComment(const CodePointIteratorPtr& cur) const {
+    if (!has_comments()) {
+      return false;
+    }
+    boost::iterator_range<const char*> haystack = cur->get_iterator_range();
+    for (std::vector<std::string>::const_iterator i = comments_.begin();
+         i != comments_.end();
+         ++i) {
+      if (boost::starts_with(haystack, *i)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
 private:
   std::vector<std::string> comments_;
+  std::vector<std::string> commentsutf8_;
+
   std::string encoding_;
 };
 

@@ -15,7 +15,10 @@ public:
       int skip,
       const std::vector<std::string>& comments,
       const std::string encoding)
-      : Source(comments, encoding), x_(x) {
+      : x_(x) {
+    set_encoding(encoding);
+    set_comments(comments);
+
     begin_ = (const char*)RAW(x);
     end_ = (const char*)RAW(x) + Rf_xlength(x);
 
